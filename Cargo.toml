@@ -10,4 +10,5 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 jni = "0.19"
+jni_fn = "0.1"
 

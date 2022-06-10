@@ -2,11 +2,12 @@ use jni::objects::ReleaseMode::NoCopyBack;
 use jni::objects::{JClass, JObject};
 use jni::sys::{jbyte, jbyteArray, jlong};
 use jni::JNIEnv;
+use jni_fn::jni_fn;
 
 pub struct PQueueI8(std::collections::BinaryHeap<i8>);
 
-#[no_mangle]
-pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1create(
+#[jni_fn("com.awesome_org.collections.RustyPriorityQueue")]
+pub fn pq_create(
     env: JNIEnv,
     _class: JClass, // because it's a static JNI method
     j_elements: jbyteArray,
@@ -36,23 +37,14 @@ pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1
     pq_ptr as jlong
 }
 
-#[no_mangle]
-pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1push(
-    _env: JNIEnv,
-    _obj: JObject,
-    native_object_ptr: jlong,
-    element: jbyte,
-) {
+#[jni_fn("com.awesome_org.collections.RustyPriorityQueue")]
+pub fn pq_push(_env: JNIEnv, _obj: JObject, native_object_ptr: jlong, element: jbyte) {
     let pq = unsafe { &mut *(native_object_ptr as *mut PQueueI8) };
     pq.0.push(element);
 }
 
-#[no_mangle]
-pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1pop(
-    env: JNIEnv,
-    _obj: JObject,
-    native_object_ptr: jlong,
-) -> jbyte {
+#[jni_fn("com.awesome_org.collections.RustyPriorityQueue")]
+pub fn pq_pop(env: JNIEnv, _obj: JObject, native_object_ptr: jlong) -> jbyte {
     let pq = unsafe { &mut *(native_object_ptr as *mut PQueueI8) };
     if let Some(val) = pq.0.pop() {
         return val;
@@ -67,12 +59,8 @@ pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_com_awesome_1org_collections_RustyPriorityQueue_pq_1free(
-    _env: JNIEnv,
-    _obj: JObject,
-    native_object_ptr: jlong,
-) {
+#[jni_fn("com.awesome_org.collections.RustyPriorityQueue")]
+pub fn pq_free(_env: JNIEnv, _obj: JObject, native_object_ptr: jlong) {
     unsafe {
         // The Box will be destructed when going out-of-scope, still it doesn't hurt to call drop() explicitly.
         drop(Box::from_raw(native_object_ptr as *mut PQueueI8));
